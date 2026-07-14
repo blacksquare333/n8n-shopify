@@ -33,6 +33,10 @@ Schedule Trigger → HTTP Request (Shopify) → Split Out → HTTP Request (Deep
 - Symptom: switched modes by feel; got "failed to parse" errors, or expressions sent as literal text.
 - Fix: the only rule that matters — **if the value contains `{{ }}` (dynamic data), use Expression; if it's a constant, use Fixed.** It has nothing to do with the field's purpose. The same node can mix both (e.g. Supabase Update: Condition operator = Fixed, Field Value with `{{ }}` = Expression).
 
+## Error Handling
+
+The DeepSeek node uses "Continue (using error output)" — failed items route to an error branch that logs `failed_title` + `error_message` to a Supabase `error_log` table, while successful items continue to the product update. One failed API call no longer kills the whole run. Verified both paths: forced 401s land in error_log; healthy runs update all products with zero error rows.
+
 ## Quick Start
 
 1. Import the workflow JSON into n8n
