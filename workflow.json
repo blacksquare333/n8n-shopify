@@ -35,7 +35,7 @@
       "name": "HTTP Request",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "ciJqaPrLpayrFaNJ",
+          "id": "UjMoMazeR41O6J7G",
           "name": "Header Auth account"
         }
       }
@@ -86,10 +86,11 @@
       "name": "HTTP Request1",
       "credentials": {
         "httpHeaderAuth": {
-          "id": "iKTvg3dYJg3KOU5K",
-          "name": "Header Auth account 3"
+          "id": "QNxuT2jW8kIeE8MI",
+          "name": "Header Auth account 2"
         }
-      }
+      },
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
@@ -120,8 +121,8 @@
       "type": "n8n-nodes-base.supabase",
       "typeVersion": 1,
       "position": [
-        768,
-        48
+        800,
+        -128
       ],
       "id": "3053a75d-6e5c-4bdf-a379-a9128b500bfe",
       "name": "Update a row",
@@ -129,6 +130,52 @@
         "supabaseApi": {
           "id": "10Xa46EocdqDks00",
           "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "error_log",
+        "dataToSend": "=failed_title → {{ $('Split Out').item.json.title }}\nerror_message → {{ $json.error.message }}"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        880,
+        144
+      ],
+      "id": "0520849d-d89d-4889-9005-125ed844b053",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "10Xa46EocdqDks00",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://dev-test-store-8bcg2qwt.myshopify.com/admin/api/2024-01/products/{{ $('Split Out').item.json.id }}.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "=httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"product\": {\n    \"id\": {{ $('Split Out').item.json.id }},\n    \"body_html\": {{ JSON.stringify($('HTTP Request1').item.json.choices[0].message.content) }}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        976,
+        -128
+      ],
+      "id": "a6d88039-f651-4d1a-bf8f-fa88b17b8b79",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "UjMoMazeR41O6J7G",
+          "name": "Header Auth account"
         }
       }
     }
@@ -176,6 +223,24 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     }
@@ -186,7 +251,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "c8e4d10b-5338-4457-b412-b50303d9d233",
+  "versionId": "5956ca1a-130a-4c1c-8b67-0bc30a7de429",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "57000921ddf2271c935153eb3f2c5745a530b23c186dcc3b669466a1707beb63"

@@ -23,6 +23,7 @@ Schedule Trigger → HTTP Request (Shopify) → Split Out → HTTP Request (Deep
 - **Idempotent runs**: uses Update (matched on `shopify_id`) instead of Create, so the workflow can run daily without violating unique constraints or producing duplicate rows. (The Supabase node in this n8n version lacks a native Upsert; for true upsert behavior, fall back to an HTTP Request node calling Supabase REST API with `Prefer: resolution=merge-duplicates`.)
 - **Cost control**: `?limit=3` during development to cap LLM API calls while testing. Remove or raise for production.
 - **Credentials**: all secrets (Shopify token, DeepSeek key, Supabase service key) are stored in n8n's credential store, not in the workflow JSON.
+- Write-back uses JSON.stringify() to safely embed LLM output (which may contain quotes/newlines) into the JSON body; Supabase retains the previous description as a rollback point before each overwrite.
 
 ## Troubleshooting Notes (real issues hit during the build)
 **1. Shopify 401 — legacy custom apps blocked by 2026 policy**
